@@ -13,6 +13,13 @@
 import moment from 'moment'
 import HelloWorld from './components/HelloWorld.vue'
 
+function start(websocketServerLocation) {
+    this.ws = new WebSocket(window.AppConfig.SOCKET_URL);
+    this.ws.onclose = function(){
+      setTimeout(function(){start(websocketServerLocation)}, 5000);
+    };
+}
+
 export default {
   name: 'app',
   data: function() {
@@ -22,6 +29,7 @@ export default {
       date: moment().add('hour', 1).format(),
     }
   },
+  mounted: function() {start.call(this)},
   methods: {
     submitForm: function(e) {
       const apiUrl = window.AppConfig.API_URL
@@ -32,25 +40,16 @@ export default {
         return
       }
 
-      fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          chat: chatId,
-          message: this.message,
-          date: this.date
-        })
-      })
-      .then(r => r.json())
-      .then(res => {
-        this.$set(this, 'message', '')
-        this.$set(this, 'date', moment().add('hour', 1).format())
-        this.status = 'Successfully added'
-      })
-      .catch( e => console.log(e))
+
+      this.ws.send(JSON.stringify({
+        chat: chatId,
+        message: this.message,
+        date: this.date
+      }))
+
+      this.$set(this, 'message', '')
+      this.$set(this, 'date', moment().add('hour', 1).format())
+      this.status = 'Successfully added'
     }
   },
   components: {
