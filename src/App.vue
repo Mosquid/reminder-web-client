@@ -2,6 +2,11 @@
   <div id="app">
     <HelloWorld v-bind:msg="status"/>
     <datetime placeholder="When to remind" type="datetime" v-model="date"></datetime>
+    <div>
+      <select v-model="chatId" name="" id="">
+        <option v-for="chat in chats" v-bind:value="chat.id">{{chat.name}}</option>
+      </select>
+    </div>
     <textarea v-model="message" placeholder="What to remind"></textarea>
     <div>
       <button id="submit" v-on:click="submitForm">Add</button>
@@ -14,10 +19,14 @@ import moment from 'moment'
 import HelloWorld from './components/HelloWorld.vue'
 
 function start(websocketServerLocation) {
-    this.ws = new WebSocket(window.AppConfig.SOCKET_URL);
-    this.ws.onclose = function(){
-      setTimeout(function(){start(websocketServerLocation)}, 5000);
-    };
+  this.ws = new WebSocket(window.AppConfig.SOCKET_URL);
+
+  this.ws.onclose = function(){
+    setTimeout(function(){start(websocketServerLocation)}, 5000);
+  }
+  
+  this.$set(this, 'chats', window.AppConfig.CHAT_IDS)
+  this.$set(this, 'chatId', this.chats[0].id)
 }
 
 export default {
@@ -26,6 +35,8 @@ export default {
     return {
       status: 'Add a reminder',
       message: '',
+      chats: '',
+      chatId: Number,
       date: moment().add('hour', 1).format(),
     }
   },
@@ -33,16 +44,14 @@ export default {
   methods: {
     submitForm: function(e) {
       const apiUrl = window.AppConfig.API_URL
-      const chatId = window.AppConfig.CHAT_ID
 
-      if (!apiUrl || !chatId) {
+      if (!apiUrl || !this.chatId) {
         console.error('API_URL and CHAT_ID are mandatory')
         return
       }
 
-
       this.ws.send(JSON.stringify({
-        chat: chatId,
+        chat: this.chatId,
         message: this.message,
         date: this.date
       }))
@@ -68,6 +77,10 @@ body {margin: 0;}
   padding: 10px 20px;
   outline: none;
   cursor: pointer;
+}
+select {
+  font-size: 150%;
+  margin: 10px 10px 30px;
 }
 #submit:hover {
   background-color: #42b983;
