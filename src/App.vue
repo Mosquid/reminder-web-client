@@ -61,6 +61,12 @@ export default {
       this.$set(this, 'message', '')
       this.$set(this, 'date', moment().add('hour', 1).format(format))
       this.status = 'Successfully added'
+
+      document.body.classList.add('sent')
+      
+      setTimeout(function() {
+        document.body.classList.remove('sent')
+      }, 1000)
     }
   },
   components: {
@@ -71,6 +77,10 @@ export default {
 
 <style>
 body {margin: 0;}
+body.sent {
+  background-color: #42b983;
+  color: #fff;
+}
 #submit {
   border: 3px solid #2c3e50;
   border-radius: 5px;
