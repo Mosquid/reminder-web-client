@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <HelloWorld v-bind:msg="status"/>
-    <datetime placeholder="When to remind" type="datetime" v-model="date"></datetime>
+    <input type="datetime-local" v-model=date>
     <div>
       <select v-model="chatId" name="" id="">
         <option v-for="chat in chats" v-bind:value="chat.id">{{chat.name}}</option>
@@ -37,7 +37,7 @@ export default {
       message: '',
       chats: '',
       chatId: Number,
-      date: moment().add('hour', 1).format(),
+      date: moment().add('hour', 1).format('YYYY-MM-DDTHH:mm:ss'),
     }
   },
   mounted: function() {start.call(this)},
@@ -93,7 +93,7 @@ select {
   color: #2c3e50;
   margin-top: 60px;
 }
-.vdatetime-input,
+input[type="datetime-local"],
 #app textarea {
   margin-bottom: 25px;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
