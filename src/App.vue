@@ -18,6 +18,8 @@
 import moment from 'moment'
 import HelloWorld from './components/HelloWorld.vue'
 
+const format = 'YYYY-MM-DDTHH:mm:ss'
+
 function start(websocketServerLocation) {
   this.ws = new WebSocket(window.AppConfig.SOCKET_URL);
 
@@ -37,7 +39,7 @@ export default {
       message: '',
       chats: '',
       chatId: Number,
-      date: moment().add('hour', 1).format('YYYY-MM-DDTHH:mm:ss'),
+      date: moment().add('hour', 1).format(format),
     }
   },
   mounted: function() {start.call(this)},
@@ -57,7 +59,7 @@ export default {
       }))
 
       this.$set(this, 'message', '')
-      this.$set(this, 'date', moment().add('hour', 1).format())
+      this.$set(this, 'date', moment().add('hour', 1).format(format))
       this.status = 'Successfully added'
     }
   },
@@ -101,6 +103,7 @@ input[type="datetime-local"],
   padding: 15px 25px;
   width: 350px;
   max-width: 100%;
+  box-sizing: border-box;
   color: #2c3e50;
   border: 3px solid #2c3e50;
   border-radius: 5px;
