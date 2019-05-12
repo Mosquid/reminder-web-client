@@ -45,7 +45,7 @@ export default {
   mounted: function() {start.call(this)},
   methods: {
     submitForm: function(e) {
-      const apiUrl = window.AppConfig.API_URL
+      const apiUrl = window.location.origin
 
       if (!apiUrl || !this.chatId) {
         console.error('API_URL and CHAT_ID are mandatory')
