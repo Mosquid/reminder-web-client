@@ -20,15 +20,15 @@ import HelloWorld from './components/HelloWorld.vue'
 
 const format = 'YYYY-MM-DDTHH:mm:ss'
 
-function start(websocketServerLocation) {
-  this.ws = new WebSocket(window.AppConfig.SOCKET_URL);
-
-  this.ws.onclose = function(){
-    setTimeout(function(){start(websocketServerLocation)}, 5000);
-  }
-  
+function start() {
   this.$set(this, 'chats', window.AppConfig.CHAT_IDS)
   this.$set(this, 'chatId', this.chats[0].id)
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const message   = urlParams.get('msg')
+
+  if (message)
+    this.$set(this, 'message', message)
 }
 
 export default {
@@ -52,21 +52,31 @@ export default {
         return
       }
 
-      this.ws.send(JSON.stringify({
-        chat: this.chatId,
-        message: this.message,
-        date: this.date
-      }))
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat: this.chatId,
+          message: this.message,
+          date: this.date
+        })
+      })
+      .then(r => r.json())
+      .then(res => {
+        this.$set(this, 'message', '')
+        this.$set(this, 'date', moment().add('hour', 1).format(format))
+        this.status = 'Successfully added'
 
-      this.$set(this, 'message', '')
-      this.$set(this, 'date', moment().add('hour', 1).format(format))
-      this.status = 'Successfully added'
-
-      document.body.classList.add('sent')
-      
-      setTimeout(function() {
-        document.body.classList.remove('sent')
-      }, 1000)
+        document.body.classList.add('sent')
+        
+        setTimeout(function() {
+          document.body.classList.remove('sent')
+        }, 1000)
+      })
+      .catch( e => console.log(e))
     }
   },
   components: {
